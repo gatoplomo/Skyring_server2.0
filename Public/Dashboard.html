@@ -440,6 +440,50 @@ btnGraficas.addEventListener("click", function() {
 
     modal.style.display = "none";
 });
+
+
+// 1. Nueva función que hace el fetch al backend
+const cargarDatosDesdeBD = async (nombreColeccion) => {
+    try {
+        console.log(`📡 Iniciando fetch para: ${nombreColeccion}...`);
+        
+        // Llamada a la ruta que creamos anteriormente
+        const response = await fetch(`/collection/${nombreColeccion}`);
+
+        if (!response.ok) {
+            throw new Error(`Error en el servidor: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // ✅ AQUÍ TIENES LOS DATOS PARA TUS GRÁFICOS
+        console.log("✅ Datos recibidos con éxito:", data);
+        
+        // Ejemplo de uso:
+        // pintarGrafico(data.ultimoRegistro); 
+        // alert(`Cargados ${data.cantidad} registros de ${data.nombre}`);
+
+    } catch (error) {
+        console.error("❌ Error al obtener datos:", error);
+        alert("No se pudo cargar la información de la base de datos.");
+    }
+};
+
+// 2. Modificación de tu evento del botón
+btnGraficas.addEventListener("click", async function() {
+    if (!archivoSeleccionado) {
+        console.error("No hay ninguna colección seleccionada.");
+        return;
+    }
+
+    console.log("🚀 Disparando petición para:", archivoSeleccionado);
+
+    // Ejecutamos la función de carga
+    await cargarDatosDesdeBD(archivoSeleccionado);
+
+    // Cerramos el modal
+    modal.style.display = "none";
+});
 </script>
 
 

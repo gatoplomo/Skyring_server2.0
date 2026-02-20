@@ -354,3 +354,43 @@ app.get('/lastCollection', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
+
+
+app.get('/collection/:nombre', async (req, res) => {
+    const { nombre } = req.params;
+
+    // 🔍 Log para monitorear la petición desde el front
+    console.log(`\n📅 [${new Date().toLocaleTimeString()}] Petición recibida:`);
+    console.log(`📂 Colección consultada: "${nombre}"`);
+
+    try {
+        const col = db.collection(nombre);
+        
+        // Verificamos si la colección tiene datos
+        const cantidad = await col.countDocuments();
+
+        if (cantidad === 0) {
+            console.warn(`⚠️  Atención: La colección "${nombre}" no existe o no tiene documentos.`);
+            return res.status(404).json({ error: 'Colección no encontrada o vacía' });
+        }
+
+        // Consultas optimizadas en paralelo
+        const [primerRegistro, ultimoRegistro] = await Promise.all([
+            col.findOne({}, { sort: { n_registro: 1 } }),
+            col.findOne({}, { sort: { n_registro: -1 } })
+        ]);
+
+        console.log(`✅ Datos recuperados con éxito (${cantidad} registros en total)`);
+
+        res.json({
+            nombre: nombre,
+            cantidad: cantidad,
+            primerRegistro: primerRegistro,
+            ultimoRegistro: ultimoRegistro
+        });
+
+    } catch (err) {
+        console.error(`❌ Error al procesar la colección "${nombre}":`, err);
+        res.status(500).json({ error: 'Error interno al consultar la base de datos' });
+    }
+});
