@@ -309,21 +309,16 @@ app.get('/lastCollection', async (req, res) => {
         let ultimaColeccion = null;
         let fechaMasReciente = null;
 
+        // Lógica de búsqueda de la colección más nueva (la que ya tienes)
         for (const nombre of nombresColecciones) {
-
-            // Buscar patrón TS + 10 números
             const match = nombre.match(/TS(\d{10})/);
-
             if (match) {
-                const ts = match[1]; // 2601290858
-
-                // Extraer partes
+                const ts = match[1];
                 const year = 2000 + parseInt(ts.substring(0, 2));
-                const month = parseInt(ts.substring(2, 4)) - 1; // Mes empieza en 0
+                const month = parseInt(ts.substring(2, 4)) - 1;
                 const day = parseInt(ts.substring(4, 6));
                 const hour = parseInt(ts.substring(6, 8));
                 const minute = parseInt(ts.substring(8, 10));
-
                 const fecha = new Date(year, month, day, hour, minute);
 
                 if (!fechaMasReciente || fecha > fechaMasReciente) {
@@ -334,22 +329,28 @@ app.get('/lastCollection', async (req, res) => {
         }
 
         if (!ultimaColeccion) {
-            return res.status(404).send('No se encontraron colecciones con formato TS válido.');
+            return res.status(404).send('No se encontraron colecciones válidas.');
         }
 
-        // ✅ Contar documentos en la última colección
-        const cantidad = await db.collection(ultimaColeccion).countDocuments();
+        const col = db.collection(ultimaColeccion);
+        const cantidad = await col.countDocuments();
+
+        // 🔹 OBTENER EL PRIMER REGISTRO (El número más bajo)
+        const primerRegistro = await col.findOne({}, { sort: { n_registro: 1 } });
+
+        // 🔹 OBTENER EL ÚLTIMO REGISTRO (El número más alto / Datos actuales)
+        const ultimoRegistro = await col.findOne({}, { sort: { n_registro: -1 } });
 
         res.json({
             nombre: ultimaColeccion,
             fechaExtraida: fechaMasReciente,
-            cantidad: cantidad
+            cantidad: cantidad,
+            primerRegistro: primerRegistro, // Contiene el n_registro inicial
+            ultimoRegistro: ultimoRegistro  // Contiene los datos para los cuadros de colores y la boya
         });
 
     } catch (err) {
         console.error('❌ Error al obtener la última colección:', err);
-        res.status(500).send('Error al obtener la última colección');
+        res.status(500).send('Error interno del servidor');
     }
 });
-
-

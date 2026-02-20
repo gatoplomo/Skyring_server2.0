@@ -161,39 +161,64 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    fetch("/lastCollection")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al obtener datos");
-            }
-            return response.json();
-        })
-        .then(data => {
+fetch("/lastCollection")
+    .then(response => {
+        if (!response.ok) throw new Error("Error al obtener datos");
+        return response.json();
+    })
+    .then(data => {
+        console.log("Respuesta cruda del servidor:", data);
 
-            const nombre = data.nombre || "No encontrada";
-            const fecha = data.fechaExtraida ? new Date(data.fechaExtraida) : null;
-            const cantidad = data.cantidad ?? "No disponible"; // nuevo campo
+        // 1. Función para formatear el Timestamp al estilo: 29/1/2026, 8:58:00 a.m.
+        const formatTS = (ts) => {
+            if (!ts) return "No disponible";
+            
+            // Creamos el objeto fecha (Year 26 -> 2026, Mes es 0-indexado en Date, por eso -1)
+            const fechaObj = new Date(
+                `20${ts.Year}`, 
+                parseInt(ts.Month) - 1, 
+                ts.Day, 
+                ts.Hour, 
+                ts.Minute, 
+                ts.Second || 0
+            );
 
-            // Formatear la fecha como YYYY-MM-DD HH:mm
-            const fechaFormateada = fecha
-                ? `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')} ${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')}`
-                : "No disponible";
+            // Configuramos el formato localizado
+            return fechaObj.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            }).replace("p. m.", "p.m.").replace("a. m.", "a.m.");
+        };
 
-            // Actualizar la card
-            document.getElementById("info-archivo").textContent = nombre;
-            document.getElementById("info-fecha").textContent = fechaFormateada;
-            document.getElementById("info-cantidad").textContent = cantidad; // actualizar cantidad
+        // 2. Extraer datos generales
+        const nombre = data.nombre || "No encontrada";
+        const cantidad = data.cantidad ?? 0;
+        
+        // 3. Formatear fechas de registros (Primer y Último)
+        const fechaPrimer = formatTS(data.primerRegistro?.Timestamp);
+        const fechaUltimo = formatTS(data.ultimoRegistro?.Timestamp);
 
-            // Mantener alert y console
-            console.log("Última colección:", nombre);
-            console.log("Fecha extraída:", fechaFormateada);
-            console.log("Cantidad de registros:", cantidad);
-            alert(`Última colección: ${nombre}\nFecha extraída: ${fechaFormateada}\nCantidad de registros: ${cantidad}`);
+        // 4. Formatear fecha de creación (La que viene en formato ISO)
+        const fechaCreacion = data.fechaExtraida 
+            ? new Date(data.fechaExtraida).toLocaleString('es-ES', { hour12: true }) 
+            : "No disponible";
 
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
+        // 5. Refrescar los campos del Front
+        document.getElementById("info-archivo").textContent = nombre;
+        document.getElementById("info-fecha").textContent = fechaCreacion;
+        document.getElementById("info-primer").textContent = fechaPrimer;
+        document.getElementById("info-ultimo").textContent = fechaUltimo;
+        document.getElementById("info-cantidad").textContent = cantidad;
+
+    })
+    .catch(error => {
+        console.error("Error al refrescar la card:", error);
+    });
 
 });
 </script>
