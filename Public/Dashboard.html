@@ -396,7 +396,12 @@ fetch("/lastCollection")
     background-color: #f1f1f1;
 }
 </style>
-
+<script>
+  
+   let registros = [];
+  let currentPage = 1;
+  const rowsPerPage = 10;
+</script>
 
 <script>
 const modal = document.getElementById("modal-log");
@@ -441,33 +446,109 @@ btnGraficas.addEventListener("click", function() {
     modal.style.display = "none";
 });
 
-
-// 1. Nueva función que hace el fetch al backend
+//AQUI ESTAMOS PICANDO
 const cargarDatosDesdeBD = async (nombreColeccion) => {
     try {
-        console.log(`📡 Iniciando fetch para: ${nombreColeccion}...`);
+        console.log(`📡 Solicitando colección: ${nombreColeccion}...`);
         
-        // Llamada a la ruta que creamos anteriormente
         const response = await fetch(`/collection/${nombreColeccion}`);
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
 
-        if (!response.ok) {
-            throw new Error(`Error en el servidor: ${response.status} ${response.statusText}`);
-        }
+        const data = await response.json(); // data.registros tiene el array completo
 
-        const data = await response.json();
+        // 🛠️ Función para el alert (se mantiene como pediste)
+        const construirFecha = (registro) => {
+            if (!registro || !registro.Timestamp) return "Fecha no disponible";
+            const ts = registro.Timestamp;
+            return `${ts.Day}/${ts.Month}/20${ts.Year} ${ts.Hour}:${ts.Minute}:${ts.Second}`;
+        };
 
-        // ✅ AQUÍ TIENES LOS DATOS PARA TUS GRÁFICOS
-        console.log("✅ Datos recibidos con éxito:", data);
-        
-        // Ejemplo de uso:
-        // pintarGrafico(data.ultimoRegistro); 
-        // alert(`Cargados ${data.cantidad} registros de ${data.nombre}`);
+        // --- A. ACTUALIZACIÓN DE CABECERA (Tags arriba) ---
+        const fInicio = construirFecha(data.primerRegistro);
+        const fFin = construirFecha(data.ultimoRegistro);
+
+        document.getElementById("info-archivo").textContent = data.nombre;
+        document.getElementById("info-cantidad").textContent = data.cantidad;
+        document.getElementById("info-primer").textContent = fInicio;
+        document.getElementById("info-ultimo").textContent = fFin;
+        document.getElementById("info-fecha").textContent = fInicio;
+
+        // --- B. ACTUALIZACIÓN DE TODO EL DASHBOARD (Tabla, Gráficos, Boya) ---
+        // Aquí llamamos a una versión modificada de tu lógica que acepta datos externos
+        actualizarTodoElDashboardConDatos(data.registros);
+
+        // ✅ TU ALERT ESTRUCTURADO
+        alert(
+            `✅ ¡Archivo encontrado con éxito!\n\n` +
+            `📂 Colección: "${data.nombre}"\n` +
+            `🔢 Cantidad total: ${data.cantidad} registros\n` +
+            `----------------------------------------\n` +
+            `📅 Primer registro: ${fInicio}\n` +
+            `📅 Último registro: ${fFin}\n` +
+            `----------------------------------------\n` +
+            `🆔 IDs: ${data.primerRegistro.n_registro} al ${data.ultimoRegistro.n_registro}`
+        );
 
     } catch (error) {
-        console.error("❌ Error al obtener datos:", error);
-        alert("No se pudo cargar la información de la base de datos.");
+        console.error("❌ Error:", error);
+        alert("⚠️ No se pudo cargar la información.");
     }
 };
+
+
+function actualizarTodoElDashboardConDatos(dataArray) {
+    if (!Array.isArray(dataArray) || dataArray.length === 0) return;
+
+    // 1. Setear el último registro global para que las tarjetas se actualicen
+    window.lastRecord = dataArray[dataArray.length - 1];
+
+    // 2. Actualizar Tarjetas (Widgets)
+    const lastHs = window.lastRecord.Hs ?? null;
+    const lastTp = window.lastRecord.Tp ?? null;
+    const lastDir = window.lastRecord.Dp ?? window.lastRecord.Dmean ?? null;
+    const lastDep = window.lastRecord.Depth ?? null;
+
+    document.getElementById("hsValue").textContent  = lastHs  ?? "--";
+    document.getElementById("tpValue").textContent  = lastTp  ?? "--";
+    document.getElementById("dirValue").textContent = lastDir ?? "--";
+    document.getElementById("depValue").textContent = lastDep != null ? ((lastDep / 1000) - 19).toFixed(2) : "--";
+
+    // 3. Boya 3D
+    if (window.lastRecord?.Profile) {
+        window.profileLevels = pickProfileLevels(window.lastRecord.Profile);
+        actualizarBuoy();
+    }
+
+    // 4. Sincronizar con la variable GLOBAL 'registros'
+    // IMPORTANTE: registros debe estar declarada arriba con 'let'
+    registros = dataArray.slice().reverse(); // Invertimos para que el más nuevo esté arriba
+    
+    currentPage = 1;
+    mostrarPagina(1); // Forzamos el redibujado de la tabla
+    actualizarBotonesPaginacion();
+
+    // 5. Preparar Gráficos (usando los últimos 144 registros del array original)
+    // Tomamos los últimos 144, pero para el gráfico los queremos en orden cronológico (sin reverse)
+    const ultimosRegistros = dataArray.slice(-144); 
+    
+    const labels = ultimosRegistros.map(r => {
+        const ts = r.Timestamp;
+        return `${String(ts.Hour).padStart(2, '0')}:${String(ts.Minute).padStart(2, '0')}`;
+    });
+
+    const dataHs = ultimosRegistros.map(r => r.Hs ?? 0);
+    const dataTp = ultimosRegistros.map(r => r.Tp ?? 0);
+    const dataDepth = ultimosRegistros.map(r => {
+        const raw = r.Depth;
+        return (typeof raw === 'number') ? (raw / 1000) - 20 : 0;
+    });
+
+    // Llamamos a tu función de Chart.js
+    actualizarGraficos(labels, dataHs, dataTp, dataDepth);
+    console.log("✅ Dashboard y Tabla actualizados con nuevos datos");
+}
+
+
 
 // 2. Modificación de tu evento del botón
 btnGraficas.addEventListener("click", async function() {
@@ -1481,9 +1562,7 @@ let lastDep = null;
   // =========================
   //  TABLA + CARGA DE REGISTROS
   // =========================
-  let registros = [];
-  let currentPage = 1;
-  const rowsPerPage = 10;
+ 
 
   async function cargarRegistros() {
     console.log('📦 Iniciando carga de registros...');
