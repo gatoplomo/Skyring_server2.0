@@ -4,7 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const { MongoClient } = require('mongodb');
 
-const hostname = '10.67.15.171';
+const hostname = '10.28.197.171';
 const port = 3000;
 const carpetaUploads = path.join(__dirname, 'uploads');
 const mongoUrl = 'mongodb://3.134.98.196:27017'; // Dirección de tu servidor MongoDB

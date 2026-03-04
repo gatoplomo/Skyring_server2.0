@@ -1,0 +1,235 @@
+{
+  "_id": "697d0c6b20af25087693e766",
+  "Timestamp": {
+    "Year": "26",
+    "Month": "01",
+    "Day": "09",
+    "Hour": "10",
+    "Minute": "03",
+    "Second": "47",
+    "Centisecond": "92"
+  },
+  "n_registro": 37,
+  "#bins": 53,
+  "Depth": 20738,
+  "Dmean": 23,
+  "Dp": 0,
+  "H1/10": 0.19,
+  "Hs": 0.15,
+  "Profile": [
+    {
+      "Magnitude": 0.015,
+      "Direction": 228
+    },
+    {
+      "Magnitude": 0.014,
+      "Direction": 168
+    },
+    {
+      "Magnitude": 0.015,
+      "Direction": 212
+    },
+    {
+      "Magnitude": 0.025,
+      "Direction": 217
+    },
+    {
+      "Magnitude": 0.027,
+      "Direction": 211
+    },
+    {
+      "Magnitude": 0.024,
+      "Direction": 228
+    },
+    {
+      "Magnitude": 0.035,
+      "Direction": 231
+    },
+    {
+      "Magnitude": 0.027,
+      "Direction": 216
+    },
+    {
+      "Magnitude": 0.018,
+      "Direction": 207
+    },
+    {
+      "Magnitude": 0.027,
+      "Direction": 236
+    },
+    {
+      "Magnitude": 0.006,
+      "Direction": 189
+    },
+    {
+      "Magnitude": 0.015,
+      "Direction": 200
+    },
+    {
+      "Magnitude": 0.019,
+      "Direction": 219
+    },
+    {
+      "Magnitude": 0.032,
+      "Direction": 212
+    },
+    {
+      "Magnitude": 0.021,
+      "Direction": 197
+    },
+    {
+      "Magnitude": 0.021,
+      "Direction": 180
+    },
+    {
+      "Magnitude": 0.024,
+      "Direction": 175
+    },
+    {
+      "Magnitude": 0.022,
+      "Direction": 175
+    },
+    {
+      "Magnitude": 0.02,
+      "Direction": 204
+    },
+    {
+      "Magnitude": 0.016,
+      "Direction": 180
+    },
+    {
+      "Magnitude": 0.002,
+      "Direction": 153
+    },
+    {
+      "Magnitude": 0.013,
+      "Direction": 77
+    },
+    {
+      "Magnitude": 0.013,
+      "Direction": 356
+    },
+    {
+      "Magnitude": 0.027,
+      "Direction": 51
+    },
+    {
+      "Magnitude": 0.031,
+      "Direction": 96
+    },
+    {
+      "Magnitude": 0.035,
+      "Direction": 83
+    },
+    {
+      "Magnitude": 0.033,
+      "Direction": 76
+    },
+    {
+      "Magnitude": 0.031,
+      "Direction": 52
+    },
+    {
+      "Magnitude": 0.045,
+      "Direction": 59
+    },
+    {
+      "Magnitude": 0.035,
+      "Direction": 55
+    },
+    {
+      "Magnitude": 0.012,
+      "Direction": 48
+    },
+    {
+      "Magnitude": 0.013,
+      "Direction": 315
+    },
+    {
+      "Magnitude": 0.016,
+      "Direction": 345
+    },
+    {
+      "Magnitude": 0.014,
+      "Direction": 321
+    },
+    {
+      "Magnitude": 0.031,
+      "Direction": 310
+    },
+    {
+      "Magnitude": 0.013,
+      "Direction": 4
+    },
+    {
+      "Magnitude": 0.008,
+      "Direction": 130
+    },
+    {
+      "Magnitude": 0.022,
+      "Direction": 297
+    },
+    {
+      "Magnitude": 0.031,
+      "Direction": 353
+    },
+    {
+      "Magnitude": 0.027,
+      "Direction": 51
+    },
+    {
+      "Magnitude": 0.02,
+      "Direction": 330
+    },
+    {
+      "Magnitude": 0.042,
+      "Direction": 0
+    },
+    {
+      "Magnitude": 0.025,
+      "Direction": 339
+    },
+    {
+      "Magnitude": 0.025,
+      "Direction": 333
+    },
+    {
+      "Magnitude": 0.014,
+      "Direction": 321
+    },
+    {
+      "Magnitude": 0.012,
+      "Direction": 355
+    },
+    {
+      "Magnitude": 0.013,
+      "Direction": 51
+    },
+    {
+      "Magnitude": 0.01,
+      "Direction": 66
+    },
+    {
+      "Magnitude": 0.024,
+      "Direction": 54
+    },
+    {
+      "Magnitude": 0.034,
+      "Direction": 40
+    },
+    {
+      "Magnitude": 0.033,
+      "Direction": 31
+    },
+    {
+      "Magnitude": 0.027,
+      "Direction": 45
+    },
+    {
+      "Magnitude": -32768,
+      "Direction": -32768
+    }
+  ],
+  "Tmean": 9.5,
+  "Tp": 14.9
+}
