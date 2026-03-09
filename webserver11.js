@@ -10,19 +10,26 @@ const carpetaUploads = path.join(__dirname, 'uploads');
 const mongoUrl = 'mongodb://3.134.98.196:27017'; // Dirección de tu servidor MongoDB
 const dbName = 'myproject'; // Nombre de tu base de datos
 
+
 const app = express();
 
-// ===========================
+// ==========================================
 // STATIC (ajuste de rutas)
-// ===========================
+// ==========================================
+
+// 1. Mantiene el original (carpeta 'Public' con P mayúscula)
 app.use(express.static(path.join(__dirname, 'Public')));
+
+// 2. Soporte alterno si en la VM la carpeta es 'public' en minúsculas
 app.use(express.static(path.join(__dirname, 'public')));
+
+// 3. ✅ Solo añadimos el servicio de imágenes y recursos front
 app.use('/index_files', express.static(path.join(__dirname, 'Public/index_files')));
 app.use('/images', express.static(path.join(__dirname, 'Public/images')));
+
+// 4. 🛠️ Montajes espejo por si existen en minúsculas en la VM
 app.use('/index_files', express.static(path.join(__dirname, 'public/index_files')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-
-// ===========================
 // CONFIGURACIÓN DE MULTER
 // ===========================
 const storage = multer.diskStorage({
