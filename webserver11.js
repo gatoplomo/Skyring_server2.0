@@ -12,7 +12,7 @@ const app = express();
 app.use(cors()); // ✅ Ahora sí funciona porque 'app' ya existe
 app.use(express.json()); 
 
-const hostname = '0.0.0.0'; // ✅ RECOMENDACIÓN: Usa 0.0.0.0 en AWS para evitar problemas de bind con la IP privada
+const hostname = '10.95.18.171'; // ✅ RECOMENDACIÓN: Usa 0.0.0.0 en AWS para evitar problemas de bind con la IP privada
 const port = 3000;
 const carpetaUploads = path.join(__dirname, 'uploads');
 const mongoUrl = 'mongodb://3.134.98.196:27017'; 
