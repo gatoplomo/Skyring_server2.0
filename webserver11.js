@@ -12,13 +12,18 @@ const dbName = 'myproject'; // Nombre de tu base de datos
 
 const app = express();
 
-// ===========================
+// 1. Permitir que se sirvan archivos desde la raíz del proyecto
 app.use(express.static(__dirname)); 
 
-// Mantenemos estas por si el sistema busca carpetas específicas
+// 2. Mapear explícitamente las carpetas de recursos (CSS, JS, Imágenes)
 app.use('/index_files', express.static(path.join(__dirname, 'index_files')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/Dashboard_files', express.static(path.join(__dirname, 'Dashboard_files')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// 3. Ruta de conveniencia para el Dashboard (ignora mayúsculas)
+app.get(['/', '/dashboard.html', '/dashboard'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'Dashboard.html'));
+});
 // ===========================
 // CONFIGURACIÓN DE MULTER
 // ===========================
