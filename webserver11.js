@@ -4,7 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const { MongoClient } = require('mongodb');
 
-const hostname = '0.0.0.0';
+const hostname = '172.31.39.213';
 const port = 3000;
 const carpetaUploads = path.join(__dirname, 'uploads');
 const mongoUrl = 'mongodb://3.134.98.196:27017'; // Dirección de tu servidor MongoDB
@@ -12,18 +12,16 @@ const dbName = 'myproject'; // Nombre de tu base de datos
 
 const app = express();
 
-// 1. Permitir que se sirvan archivos desde la raíz del proyecto
-app.use(express.static(__dirname)); 
+// ===========================
+// STATIC (ajuste de rutas)
+// ===========================
+app.use(express.static(path.join(__dirname, 'Public')));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/index_files', express.static(path.join(__dirname, 'Public/index_files')));
+app.use('/images', express.static(path.join(__dirname, 'Public/images')));
+app.use('/index_files', express.static(path.join(__dirname, 'public/index_files')));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
-// 2. Mapear explícitamente las carpetas de recursos (CSS, JS, Imágenes)
-app.use('/index_files', express.static(path.join(__dirname, 'index_files')));
-app.use('/Dashboard_files', express.static(path.join(__dirname, 'Dashboard_files')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
-
-// 3. Ruta de conveniencia para el Dashboard (ignora mayúsculas)
-app.get(['/', '/dashboard.html', '/dashboard'], (req, res) => {
-    res.sendFile(path.join(__dirname, 'Dashboard.html'));
-});
 // ===========================
 // CONFIGURACIÓN DE MULTER
 // ===========================
