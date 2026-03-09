@@ -3,34 +3,44 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const { MongoClient } = require('mongodb');
+const cors = require('cors'); // ✅ Importado correctamente
 
-const hostname = '172.31.39.213';
+// 1. PRIMERO inicializa la app
+const app = express(); 
+
+// 2. SEGUNDO aplica los middlewares
+app.use(cors()); // ✅ Ahora sí funciona porque 'app' ya existe
+app.use(express.json()); 
+
+const hostname = '0.0.0.0'; // ✅ RECOMENDACIÓN: Usa 0.0.0.0 en AWS para evitar problemas de bind con la IP privada
 const port = 3000;
 const carpetaUploads = path.join(__dirname, 'uploads');
-const mongoUrl = 'mongodb://3.134.98.196:27017'; // Dirección de tu servidor MongoDB
-const dbName = 'myproject'; // Nombre de tu base de datos
-
-
-const app = express();
+const mongoUrl = 'mongodb://3.134.98.196:27017'; 
+const dbName = 'myproject'; 
 
 // ==========================================
-// STATIC (ajuste de rutas)
+// STATIC (Optimizado para AWS/Linux)
 // ==========================================
 
-// 1. Mantiene el original (carpeta 'Public' con P mayúscula)
-app.use(express.static(path.join(__dirname, 'Public')));
+// Definimos una sola fuente de verdad para evitar conflictos de mayúsculas
+const publicPath = path.join(__dirname, 'Public'); 
 
-// 2. Soporte alterno si en la VM la carpeta es 'public' en minúsculas
-app.use(express.static(path.join(__dirname, 'public')));
+// Servir archivos raíz (index.html, etc.)
+app.use(express.static(publicPath));
 
-// 3. ✅ Solo añadimos el servicio de imágenes y recursos front
-app.use('/index_files', express.static(path.join(__dirname, 'Public/index_files')));
-app.use('/images', express.static(path.join(__dirname, 'Public/images')));
+// Servir recursos específicos
+app.use('/index_files', express.static(path.join(publicPath, 'index_files')));
+app.use('/images', express.static(path.join(publicPath, 'images')));
 
-// 4. 🛠️ Montajes espejo por si existen en minúsculas en la VM
-app.use('/index_files', express.static(path.join(__dirname, 'public/index_files')));
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+// ===========================
 // CONFIGURACIÓN DE MULTER
+// ===========================
+// Asegúrate de que la carpeta 'uploads' exista en la raíz de tu proyecto en AWS
+if (!fs.existsSync(carpetaUploads)) {
+    fs.mkdirSync(carpetaUploads);
+}
+
+
 // ===========================
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, carpetaUploads),
