@@ -13,15 +13,12 @@ const dbName = 'myproject'; // Nombre de tu base de datos
 const app = express();
 
 // ===========================
-// STATIC (ajuste de rutas)
-// ===========================
-app.use(express.static(path.join(__dirname, 'Public')));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/index_files', express.static(path.join(__dirname, 'Public/index_files')));
-app.use('/images', express.static(path.join(__dirname, 'Public/images')));
-app.use('/index_files', express.static(path.join(__dirname, 'public/index_files')));
-app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use(express.static(__dirname)); 
 
+// Mantenemos estas por si el sistema busca carpetas específicas
+app.use('/index_files', express.static(path.join(__dirname, 'index_files')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/Dashboard_files', express.static(path.join(__dirname, 'Dashboard_files')));
 // ===========================
 // CONFIGURACIÓN DE MULTER
 // ===========================
